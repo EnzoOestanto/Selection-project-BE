@@ -111,7 +111,6 @@ module.exports = {
                     data: data,
                     token: token
                 })
-
             }
         } catch (error) {
             res.send({
