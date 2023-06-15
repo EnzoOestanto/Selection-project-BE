@@ -92,6 +92,13 @@ module.exports = {
                     email: loginDetails
                 }
             })
+            if (!usernameCheck && !emailCheck) {
+                throw {
+                    status: 400,
+                    success: false,
+                    message: 'Invalid credentials'
+                }
+            }
             let data
             if (emailCheck) {
                 data = emailCheck
@@ -105,16 +112,24 @@ module.exports = {
                 let payload = { id: data.id, username: data.username, email: data.email }
                 console.log('payload', payload)
                 const token = jwt.sign(payload, 'userVerificationToken')
-                return res.json({
+                return res.status(200).send({
+                    status: 200,
                     success: true,
                     message: 'login success',
                     data: data,
                     token: token
                 })
+            } else {
+                throw {
+                    status: 400,
+                    success: false,
+                    message: 'Invalid credentials'
+                }
             }
         } catch (error) {
             res.send({
-                success: false,
+                status: error.status,
+                success: error.success,
                 message: error.message,
                 data: []
             })
