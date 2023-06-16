@@ -2,7 +2,9 @@ const db = require('../models')
 const userDB = db.user
 var jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-
+const transporter = require('./../helpers/transporter')
+const handlebars = require('handlebars');
+const fs = require('fs')
 
 module.exports = {
     register: async (req, res) => {
@@ -15,7 +17,24 @@ module.exports = {
                     message: 'Please fill all fields'
                 }
             }
-            console.log('body', fullName, username, email, password, confirmPassword)
+            const usernameReq = /^[A-Za-z0-9]*$/
+            const emailReq = /^\S+@\S+\.\S+$/
+            if(!username.match(usernameReq)){
+                throw {
+                    status: 400,
+                    success: false,
+                    message: 'Username must contain only letters and numbers'
+                }
+            }
+            if(!email.match(emailReq)){
+                throw{
+                    status: 400,
+                    success: false,
+                    message: 'Email format is invalid'
+                }
+            }
+
+            console.log('body', fullName, username, email, password, passwordConfirmation)
             const usernameCheck = await userDB.findOne({
                 where: {
                     username: username
@@ -40,11 +59,11 @@ module.exports = {
                 };
             }
             const passwordReq = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/
-            if (password !== confirmPassword) {
+            if (password !== passwordConfirmation) {
                 throw {
                     status: 400,
                     success: false,
-                    message: 'password  did not match'
+                    message: 'password did not match'
                 }
             }
             if (!password.match(passwordReq)) {
@@ -56,7 +75,19 @@ module.exports = {
             } else {
                 const salt = await bcrypt.genSalt(10)
                 const hashedPassword = await bcrypt.hash(password, salt);
+                const emailTemplate = fs.readFileSync('./public/email/template.html', 'utf8')
+                const tempCompile = await handlebars.compile(emailTemplate)
+                const tempResult = tempCompile({link: `http://google.com`})
                 const result = await userDB.create({ full_name: fullName, username, email, password: hashedPassword })
+                if (result) {
+                    await transporter.sendMail({
+                        from: 'enzo4862@gmail.com',
+                        to: email,
+                        subject: 'Registration',
+                        html: tempResult
+                    })
+                }
+                
                 return res.status(200).send({
                     success: true,
                     message: 'Register success',
