@@ -24,6 +24,9 @@ module.exports = {
       image: {
         type: Sequelize.STRING
       },
+      status:{
+        type: Sequelize.BOOLEAN
+      },
       bio: {
         type: Sequelize.STRING
       },
