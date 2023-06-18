@@ -4,16 +4,18 @@ const app = express();
 var cors = require('cors')
 
 app.use(express.json())
-app.use(express.static('Public'))
-app.use(cors()) 
+app.use(express.static('public'))
+app.use(cors())
 
 app.get('/', (req, res) => {
     res.send('<h1> WELCOME</h1>')
 })
 
 // import Routes
-const { authRouter } = require('./routers')
-app.use('/auth',authRouter)
+const { authRouter, postRouter, userRouter } = require('./routers')
+app.use('/auth', authRouter)
+app.use('/posts', postRouter)
+app.use('/users', userRouter)
 
 
 app.listen(PORT, () => {
