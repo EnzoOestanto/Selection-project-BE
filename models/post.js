@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       post.belongsTo(models.user,{
         foreignKey: 'user_id'
       })
+      post.hasMany(models.like,{
+        foreignKey: 'post_id'
+      })
     }
   }
   post.init({

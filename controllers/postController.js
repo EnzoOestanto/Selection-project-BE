@@ -57,14 +57,27 @@ module.exports = {
     },
     getAllPost: async (req, res) => {
         try {
-            let result = await postDB.findAll({include: db.user})
-            console.log('masuk get all' )
+            //pagination
+            const { page, limit } = req.query
+            const pageLimit = Number(limit)
+            const offset = (page - 1) * pageLimit
+            const response = await postDB.count()
+            let totalPage = Math.ceil(response / pageLimit)
+
+            let result = await postDB.findAll({
+                include: db.user,
+                order: [['updatedAt', 'DESC']],
+                limit: pageLimit,
+                offset: offset,
+            })
+            console.log('masuk get all')
             if (result.length > 0) {
                 return res.status(200).send({
                     status: 200,
                     success: true,
                     message: 'get all post success',
-                    data: result
+                    data: result,
+                    totalPage: totalPage
                 })
             } else {
                 res.status(404).send({
@@ -80,5 +93,50 @@ module.exports = {
                 message: error.message
             })
         }
-    }
+    },
+    editPost: async (req, res) => {
+        try {
+            const { id } = req.params
+            const { text } = req.body
+
+            let result = await postDB.update({ text }, { where: { id: id } })
+            return res.status(200).send({
+                status: 200,
+                success: true,
+                message: 'Post updated',
+                data: result
+            })
+
+        } catch (error) {
+            res.send({
+                status: error.status,
+                success: error.success,
+                message: error.message,
+                data: []
+            })
+        }
+    },
+    deletePost: async (req, res) => {
+        try {
+            const { id } = req.params
+            let result = await postDB.destroy({ where: { id: id } })
+            return res.status(200).send({
+                status: 200,
+                success: true,
+                message: 'Post deleted',
+                data: result
+            })
+        } catch (error) {
+            res.send({
+                status: error.status,
+                success: error.success,
+                message: error.message,
+                data: []
+            })
+
+        }
+    },
+    
+
+
 }

@@ -12,10 +12,11 @@ app.get('/', (req, res) => {
 })
 
 // import Routes
-const { authRouter, postRouter, userRouter } = require('./routers')
+const { authRouter, postRouter, userRouter, likeRouter } = require('./routers')
 app.use('/auth', authRouter)
 app.use('/posts', postRouter)
 app.use('/users', userRouter)
+app.use('/likes', likeRouter)
 
 
 app.listen(PORT, () => {
