@@ -96,7 +96,7 @@ module.exports = {
                     id: id
                 }
             })
-
+            console.log('email', id,result)
             const email = result?.email
             let payload = { email: email }
             const token = jwt.sign(payload, 'userVerificationToken')

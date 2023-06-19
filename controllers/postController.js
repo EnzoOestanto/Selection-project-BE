@@ -62,6 +62,7 @@ module.exports = {
             const pageLimit = Number(limit)
             const offset = (page - 1) * pageLimit
             const response = await postDB.count()
+            console.log('allpost',response)
             let totalPage = Math.ceil(response / pageLimit)
 
             let result = await postDB.findAll({
