@@ -1,10 +1,6 @@
 const db = require('../models')
 const likeDB = db.like
-var jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const transporter = require('./../helpers/transporter')
-const handlebars = require('handlebars');
-const fs = require('fs')
+
 
 module.exports = {
     addLike: async (req, res) => {
