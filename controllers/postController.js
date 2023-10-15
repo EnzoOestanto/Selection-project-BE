@@ -62,7 +62,7 @@ module.exports = {
             const pageLimit = Number(limit)
             const offset = (page - 1) * pageLimit
             const response = await postDB.count()
-            console.log('allpost',response)
+            console.log('allpost', response)
             let totalPage = Math.ceil(response / pageLimit)
 
             let result = await postDB.findAll({
@@ -137,7 +137,33 @@ module.exports = {
 
         }
     },
-    
+    getSinglePost: async (req, res) => {
+        try {
+            console.log('get singl;e')
+            const { postId } = req.params
+            console.log(postId)
+            let result = await postDB.findOne({
+                include: db.user,
+                where: { id: postId }
+            })
+
+            if (result) {
+                return res.status(200).send({
+                    status: 200,
+                    success: true,
+                    message: 'get single post success',
+                    data: result
+                })
+            }
+        } catch (error) {
+            res.send({
+                status: error.status,
+                success: error.success,
+                message: error.message,
+                data: []
+            })
+        }
+    }
 
 
 }
